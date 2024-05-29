@@ -80,7 +80,7 @@ function handleRequestPorter(){
     //     alert("hello enter your lat long")
     // }else{
         const formData ={request_id,delivery_instructions,pickup_details,drop_details}
-        fetch(`https://pfe-apigw-uat.porter.in/v1/orders/create`,{
+        fetch(`https://cors-anywhere.herokuapp.com/https://pfe-apigw-uat.porter.in/v1/orders/create`,{
             method:"POST",
             headers: { "x-api-key":"d8635c60-09b4-4c44-828f-d2da5bf56c79","Content-Type": "application/json" },
             body:JSON.stringify(formData)
