@@ -39,6 +39,10 @@ function OrderDetails() {
         type: order?.deliveryInstruction || "cx",
         description: order?.deliveryInstruction || "cx",
       },
+      {
+        type: order?.deliveryInstruction || "cx",
+        description: order?.deliveryInstruction || "cx",
+      },
     ],
   });
 
@@ -46,40 +50,40 @@ function OrderDetails() {
     address: {
       apartment_address: "Alankar",
       street_address1: "central spine",
-      street_address2: "two",
+      street_address2: "twosdcdsc",
       landmark: "dominos",
       city: "jaipur",
       state: "Rajasthan",
       pincode: "302039",
       country: "India",
-      lat: 12.9165757,
-      lng: 77.6101163,
+      lat: 12.939391726766775,
+      lng: 77.62629462844717,
       contact_details: {
         name: "Rohit",
-        phone_number: "7877575481",
+        phone_number: "+917877575481",
       },
     },
   });
 
   const [drop_details, setdrop_details] = useState({
     address: {
-      apartment_address: order?.houseNo || "xc",
-      street_address1: order?.street || "cx",
-      street_address2: "two" || "c",
-      landmark: order?.landmark || "cx",
-      city: order?.city || "cx ",
-      state: order?.state || "cx",
-      pincode: order?.pincode || "cx",
+      apartment_address: order?.houseNo || "xccdvdv",
+      street_address1: order?.street || "cxsdcsdc",
+      street_address2: "twoddcscsc" || "c",
+      landmark: order?.landmark || "cxsdcdsc",
+      city: order?.city || "cxdscsdc ",
+      state: order?.state || "cxsdsd",
+      pincode: order?.pincode || "cxsdcdsc",
       country: "India",
       lat: user?.lat || 12.9165757,
       lng: user?.long || 77.6101163,
       contact_details: {
-        name: order?.companyName || "cx",
-        phone_number: user?.phone || "7877575481",
+        name: order?.companyName || "cxdcsdcdsc",
+        phone_number: user?.phone || "+917877575481",
       },
     },
   });
-  const [request_id, setrequest_id] = useState("rohittest0001");
+  const [request_id, setrequest_id] = useState("Shopinkarts_order_00004");
   const handleRequestPorter = async () => {
     // if(!user.lat || !user.long){
     //     alert("hello enter your lat long")
@@ -136,17 +140,19 @@ function OrderDetails() {
       },
     };
 
-    // const formData ={request_id,delivery_instructions,pickup_details,drop_details}
-    console.log(requestBody);
+    const formData = {
+      request_id,
+      delivery_instructions,
+      pickup_details,
+      drop_details,
+    };
+    console.log(JSON.stringify(formData));
     try {
       const response = await fetch(
         "http://localhost:80/proxy/v1/orders/create",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": "d8635c60-09b4-4c44-828f-d2da5bf56c79"
-          },
+
           body: JSON.stringify(requestBody),
         }
       );
@@ -156,7 +162,7 @@ function OrderDetails() {
       }
 
       const data = await response.json();
-       console.log(data.order_id)
+      console.log(data.order_id);
       fetch(
         `http://localhost:80/api/porter/request/${id}?porterId=${data.order_id}`,
         {

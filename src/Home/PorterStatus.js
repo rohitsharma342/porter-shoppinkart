@@ -8,6 +8,11 @@ function PorterStatus() {
     const id = query.get('orderid');
     const userId = query.get('userid');
     const [porter,setPorter]=useState(null)
+    const [porterData,setPorterData]=useState({})
+
+  
+
+     
     useEffect(()=>{
         fetch(`http://localhost:80/api/porter/get/${id}`,{
             headers: { "Content-Type": "application/json" },
@@ -16,31 +21,41 @@ function PorterStatus() {
            if(response.status==true){
             setPorter(response.data)
             console.log(response)
+            handleFetch()
            }else{
             setPorter(null)
            }
         })
+      
+      },[query])
+      const handleFetch=async ()=>{
+      console.log(porter)
         try {
-            const response =  fetch('http://localhost:80/proxy/v1/orders/CRN1716800105713', {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json"
-              }
-            //   body: JSON.stringify(formData)
-            });
-      
-            if (!response.ok) {
-              throw new Error('Network response was not ok ' + response.statusText);
-            }
-      
-            const data =  response.json();
-            // console.log(data.order_id)
+            const response= await fetch(`http://localhost:80/proxy/v1/orders/${porter.porterId}`, {
+                method:"GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'x-api-key': 'd8635c60-09b4-4c44-828f-d2da5bf56c79'
+                  }
+             
          
-          } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-          }
-      },[])
-
+             })
+             
+                 if (!response.ok) {
+                     throw new Error('Network response was not ok ' + response.statusText);
+                   }else{
+             
+                   const data =await  response.json();
+                    console.log(data)
+                setPorterData(data)
+                   }
+        
+       
+            
+           } catch (error) {
+             console.error('There was a problem with the fetch operation:', error);
+           }
+    }
     return ( 
         <>
         <div className="text-center mt-5">
@@ -50,13 +65,13 @@ function PorterStatus() {
         <div className="w-full text-center mt-10">
         <div>
             <p className="text-2xl font-bold">{porter.porterId}</p>
-            <p>pickup_time : 12345</p>
-            <p>order_accepted_time : 12345</p>
+            <p>pickup_time : {`${new Date(porterData?.order_timings?.pickup_time).getDate()}/${new Date(porterData?.order_timings?.pickup_time).getMonth()+1}/${new Date(porterData?.order_timings?.pickup_time).getFullYear()},${new Date(porterData?.order_timings?.pickup_time).getHours()}:${new Date(porterData?.order_timings?.pickup_time).getMinutes()}`}</p>
+            <p>order_accepted_time : {`${new Date(porterData?.order_timings?.order_accepted_time).getDate()}/${new Date(porterData?.order_timings?.order_accepted_time).getMonth()+1}/${new Date(porterData?.order_timings?.order_accepted_time).getFullYear()},${new Date(porterData?.order_timings?.order_accepted_time).getHours()}:${new Date(porterData?.order_timings?.order_accepted_time).getMinutes()}`}</p>
             <p>order_started_time : 12345</p>
             <p>order_ended_time : 12345</p>
         </div>
         <div>
-        <p className="text-2xl font-bold">OPEN</p>
+        <p className="text-2xl font-bold">{porterData.status}</p>
            <button className="bg-red-600 px-4 mt-5 text-white py-1">Cancle Now</button>
         </div>
         </div>
