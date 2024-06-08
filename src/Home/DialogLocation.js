@@ -35,6 +35,7 @@ function handleSubmit(){
           //  setButton(false)
           toast.success("Location Updated Successfully")
           props.handleClose()
+          window.location.reload()
        }else{
        toast.error("Something Went Wrong")
        }
