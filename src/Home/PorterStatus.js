@@ -14,7 +14,7 @@ function PorterStatus() {
 
      
     useEffect(()=>{
-        fetch(`http://localhost:80/api/porter/get/${id}`,{
+        fetch(`http://139.59.64.38:80/api/porter/get/${id}`,{
             headers: { "Content-Type": "application/json" },
         }).then((res)=>{return res.json()})
         .then((response)=>{
@@ -31,7 +31,7 @@ function PorterStatus() {
       const handleFetch=async ()=>{
       console.log(porter)
         try {
-            const response= await fetch(`http://localhost:80/proxy/v1/orders/${porter.porterId}`, {
+            const response= await fetch(`http://139.59.64.38:80/proxy/v1/orders/${porter.porterId}`, {
                 method:"GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -67,12 +67,12 @@ function PorterStatus() {
             <p className="text-2xl font-bold">{porter.porterId}</p>
             <p>pickup_time : {`${new Date(porterData?.order_timings?.pickup_time).getDate()}/${new Date(porterData?.order_timings?.pickup_time).getMonth()+1}/${new Date(porterData?.order_timings?.pickup_time).getFullYear()},${new Date(porterData?.order_timings?.pickup_time).getHours()}:${new Date(porterData?.order_timings?.pickup_time).getMinutes()}`}</p>
             <p>order_accepted_time : {`${new Date(porterData?.order_timings?.order_accepted_time).getDate()}/${new Date(porterData?.order_timings?.order_accepted_time).getMonth()+1}/${new Date(porterData?.order_timings?.order_accepted_time).getFullYear()},${new Date(porterData?.order_timings?.order_accepted_time).getHours()}:${new Date(porterData?.order_timings?.order_accepted_time).getMinutes()}`}</p>
-            <p>order_started_time : 12345</p>
-            <p>order_ended_time : 12345</p>
+            <p>order_started_time : {`${new Date(porterData?.order_timings?.order_started_time).getDate()}/${new Date(porterData?.order_timings?.order_started_time).getMonth()+1}/${new Date(porterData?.order_timings?.order_started_time).getFullYear()},${new Date(porterData?.order_timings?.order_started_time).getHours()}:${new Date(porterData?.order_timings?.order_started_time).getMinutes()}`}</p>
+            <p>order_ended_time : {`${new Date(porterData?.order_timings?.order_ended_time).getDate()}/${new Date(porterData?.order_timings?.order_ended_time).getMonth()+1}/${new Date(porterData?.order_timings?.order_ended_time).getFullYear()},${new Date(porterData?.order_timings?.order_ended_time).getHours()}:${new Date(porterData?.order_timings?.order_ended_time).getMinutes()}`}</p>
         </div>
         <div>
         <p className="text-2xl font-bold">{porterData.status}</p>
-           <button className="bg-red-600 px-4 mt-5 text-white py-1">Cancle Now</button>
+           {/* <button className="bg-red-600 px-4 mt-5 text-white py-1">Cancle Now</button> */}
         </div>
         </div>
 }

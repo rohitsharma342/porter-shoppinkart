@@ -1,6 +1,9 @@
 import { Divider } from "@mui/material";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from "react-router-dom";
+import DialogLocation from "./DialogLocation";
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
@@ -10,29 +13,16 @@ function OrderDetails() {
   const userId = query.get("userid");
   const [order, setOrder] = useState({});
   const [user, setUser] = useState({});
+  const [button,setButton]=useState(false)
+  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    fetch(`http://localhost:80/api/users/${userId}`, {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((response) => {
-        // console.log(response)
-        setUser(response.user);
-      });
-    fetch(`http://localhost:80/api/orders/track?id=${id}`, {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((response) => {
-        // console.log(response)
-        setOrder(response.completeOrder);
-      });
-  }, []);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const [delivery_instructions, setdelivery_instructions] = useState({
     instructions_list: [
       {
@@ -67,12 +57,12 @@ function OrderDetails() {
 
   const [drop_details, setdrop_details] = useState({
     address: {
-      apartment_address: order?.houseNo || "xccdvdv",
+      apartment_address: order?.houseNo || "demo",
       street_address1: order?.street || "cxsdcsdc",
       street_address2: "twoddcscsc" || "c",
       landmark: order?.landmark || "cxsdcdsc",
       city: order?.city || "cxdscsdc ",
-      state: order?.state || "cxsdsd",
+      state: order?.state || "Rajashthan",
       pincode: order?.pincode || "cxsdcdsc",
       country: "India",
       lat: user?.lat || 12.9165757,
@@ -84,10 +74,85 @@ function OrderDetails() {
     },
   });
   const [request_id, setrequest_id] = useState("Shopinkarts_order_00004");
+
+  useEffect(()=>{
+    fetch(`http://139.59.64.38:80/api/porter/get/${id}`,{
+        headers: { "Content-Type": "application/json" },
+    }).then((res)=>{return res.json()})
+    .then((response)=>{
+       if(response.status==true){
+           setButton(false)
+       
+       }else{
+        setButton(true)
+       }
+    })
+  
+  },[query])
+
+  useEffect(() => {
+    fetch(`http://139.59.64.38:80/api/users/${userId}`, {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((response) => {
+        // console.log(response)
+        setUser(response.user);
+        setdrop_details({
+          address:{
+            lat:response.user?.lat,
+            long:response.user?.long
+          },
+          contact_details:{
+            name:order?.companyName,
+            phone_number:`$+91${response.user?.phone}`
+          }
+        })
+      });
+    fetch(`http://139.59.64.38:80/api/orders/track?id=${id}`, {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((response) => {
+         console.log(response.completeOrder)
+        setOrder(response.completeOrder);
+        setdelivery_instructions({
+          instructions_list:[
+            {type:response.completeOrder.deliveryInstruction,
+              description:response.completeOrder.deliveryInstruction
+            }
+          ]
+        })
+        setdrop_details({
+          address:{
+          apartment_address: response.completeOrder.shippingDetails?.houseNo,
+      street_address1: response.completeOrder?.shippingDetails?.street || "cxsdcsdc",
+      street_address2: "" || "",
+      landmark: response.completeOrder?.shippingDetails?.landmark || "cxsdcdsc",
+      city: response.completeOrder?.shippingDetails?.city || "cxdscsdc ",
+      state: response.completeOrder?.shippingDetails?.state || "cxsdsd",
+      pincode: response.completeOrder?.shippingDetails?.pincode || "cxsdcdsc",
+      country: "India",
+      lat: user?.lat || 12.9165757,
+      lng: user?.long || 77.6101163,
+          },
+      contact_details:{
+        name:response.completeOrder?.companyName,
+        phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`
+      }
+      });
+
+      });
+  }, []);
+
   const handleRequestPorter = async () => {
-    // if(!user.lat || !user.long){
-    //     alert("hello enter your lat long")
-    // }else{
+    if(!user.lat || !user.long){
+        handleClickOpen()
+    }else{
     const requestBody = {
       request_id: "Shopinkarts_order_00004",
       delivery_instructions: {
@@ -146,10 +211,10 @@ function OrderDetails() {
       pickup_details,
       drop_details,
     };
-    console.log(JSON.stringify(formData));
+    console.log(formData);
     try {
       const response = await fetch(
-        "http://localhost:80/proxy/v1/orders/create",
+        "http://139.59.64.38:80/proxy/v1/orders/create",
         {
           method: "POST",
 
@@ -158,13 +223,14 @@ function OrderDetails() {
       );
 
       if (!response.ok) {
+        toast.error("Network response was not ok")
         throw new Error("Network response was not ok " + response.statusText);
       }
-
+      toast.success("Order Requested Successfully")
       const data = await response.json();
       console.log(data.order_id);
       fetch(
-        `http://localhost:80/api/porter/request/${id}?porterId=${data.order_id}`,
+        `http://139.59.64.38:80/api/porter/request/${id}?porterId=${data.order_id}`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -173,17 +239,17 @@ function OrderDetails() {
           return res.json();
         })
         .then((response) => {
-          // console.log(response)
-          // setOrder(response.completeOrder)
+         window.location.reload()
         });
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
   };
-  // }
+  }
 
   return (
     <>
+    <ToastContainer/>
       <h1 className="ms-10 mt-10">Order Details:</h1>
 
       <div className="flex ms-10 mt-10">
@@ -195,7 +261,7 @@ function OrderDetails() {
           </div>
           <div>
             <h1>
-              <b>ORDER STATUS</b> : {order?.trackingDetails?.title}
+              <b>ORDER STATUS</b> : {order.orderStatus==0 && "Order placed"}  {order.orderStatus==1 && "Processing"}  {order.orderStatus==2 && "Out for delivery"}  {order.orderStatus==3 && "Delivered"}  {order.orderStatus==4 && "Cancelled"}  {order.orderStatus==5 && "Order Replace"}
             </h1>
           </div>
           <div>
@@ -213,7 +279,8 @@ function OrderDetails() {
               <b>AMOUNT</b> : {order?.totalAmount}
             </h1>
           </div>
-          {order.orderStatus === 0 && (
+          <DialogLocation handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} userId={userId}/>
+          {order.orderStatus === 0 && button===true ? (
             <div>
               <button
                 className=" bg-blue-700 px-3 py-2 mb-10 text-white"
@@ -222,7 +289,12 @@ function OrderDetails() {
                 REQ on Porter
               </button>
             </div>
-          )}
+
+          ):
+          (
+            <div></div>
+          )
+          }
         </div>
         <Divider />
       </div>
