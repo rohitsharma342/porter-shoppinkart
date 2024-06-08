@@ -276,7 +276,7 @@ function OrderDetails() {
           </div>
           <div>
             <h1>
-              <b>AMOUNT</b> : {order?.totalAmount}
+              <b>AMOUNT</b> : {order?.finalAmount}
             </h1>
           </div>
           <DialogLocation handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} userId={userId}/>
