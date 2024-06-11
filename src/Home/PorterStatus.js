@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import moment from 'moment';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -12,7 +13,7 @@ function PorterStatus() {
     const id = query.get('orderid');
     const [porter, setPorter] = useState(null);
     const [porterData, setPorterData] = useState(null);
-  const [show,setShow]=useState(false)
+
     useEffect(() => {
         fetch(`http://139.59.64.38:80/api/porter/get/${id}`, {
             headers: { "Content-Type": "application/json" },
@@ -22,7 +23,7 @@ function PorterStatus() {
                 setPorter(response.data);
             } else {
                 setPorter(null);
-                // toast.error("Failed to fetch porter details.");
+                toast.error("Failed to fetch porter details.");
             }
         })
         .catch(error => {
@@ -44,7 +45,6 @@ function PorterStatus() {
 
             const data = await response.json();
             setPorterData(data);
-            setShow(true)
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
             toast.error("An error occurred while fetching porter data.");
@@ -70,6 +70,10 @@ function PorterStatus() {
         }
     };
 
+    const formatTimestamp = (timestamp) => {
+        return moment(timestamp).format('DD/MM/YYYY, HH:mm:ss'); // e.g., "11/06/2024, 12:34:56"
+    };
+
     return (
         <>
             <ToastContainer />
@@ -81,14 +85,14 @@ function PorterStatus() {
                     View Details
                 </button>
             </div>
-            {porter && show===true ? (
+            {porter && porterData ? (
                 <div className="w-full text-center mt-10">
                     <div>
                         <p className="text-2xl font-bold">{porter.porterId}</p>
-                        <p>pickup_time: {new Date(porterData?.order_timings?.pickup_time).toLocaleString()}</p>
-                        <p>order_accepted_time: {new Date(porterData?.order_timings?.order_accepted_time).toLocaleString()}</p>
-                        <p>order_started_time: {new Date(porterData?.order_timings?.order_started_time).toLocaleString()}</p>
-                        <p>order_ended_time: {new Date(porterData?.order_timings?.order_ended_time).toLocaleString()}</p>
+                        <p>pickup_time: {formatTimestamp(porterData?.order_timings?.pickup_time)}</p>
+                        <p>order_accepted_time: {formatTimestamp(porterData?.order_timings?.order_accepted_time)}</p>
+                        <p>order_started_time: {formatTimestamp(porterData?.order_timings?.order_started_time)}</p>
+                        <p>order_ended_time: {formatTimestamp(porterData?.order_timings?.order_ended_time)}</p>
                     </div>
                     <div>
                         <p className="text-2xl font-bold">{porterData.status}</p>

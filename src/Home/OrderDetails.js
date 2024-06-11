@@ -126,7 +126,7 @@ function OrderDetails() {
       lat: response.completeOrder.theUser?.lat ,
       lng: response.completeOrder.theUser?.long ,
       contact_details:{
-        name:response.completeOrder?.companyName || "shopinKarts",
+        name:response.completeOrder?.companyName || response.completeOrder?.shippingDetails?.name,
         phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`|| "-"
       }
           },
