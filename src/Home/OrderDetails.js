@@ -38,19 +38,19 @@ function OrderDetails() {
 
   const [pickup_details, setpickup_details] = useState({
     address: {
-      apartment_address: "Alankar",
-      street_address1: "central spine",
-      street_address2: "twosdcdsc",
-      landmark: "dominos",
+      apartment_address: "Divya Plaza",
+      street_address1: "Nagar Nigam Rd, Gurjaron Ka Mohalla, Dada Gurudev Nagar",
+      street_address2: "",
+      landmark: "HDFC Bank",
       city: "jaipur",
       state: "Rajasthan",
-      pincode: "302039",
+      pincode: "302029",
       country: "India",
-      lat: 12.939391726766775,
-      lng: 77.62629462844717,
+      lat: 26.8187572,
+      lng: 75.7802418,
       contact_details: {
-        name: "Rohit",
-        phone_number: "+917877575481",
+        name: "Aditya",
+        phone_number: "+918302607122",
       },
     },
   });
@@ -73,8 +73,72 @@ function OrderDetails() {
       },
     },
   });
-  const [request_id, setrequest_id] = useState("Shopinkarts_order_00004");
+  const [request_id, setrequest_id] = useState(`shoppinKarts_delivery_request_id_${id}`);
+  useEffect(() => {
+    fetch(`http://139.59.64.38:80/api/users/${userId}`, {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((response) => {
+        // console.log(response)
+        setUser(response.user);
+        // setdrop_details({
+        //   address:{
+        //     lat:response.user?.lat,
+        //     long:response.user?.long,
+        //     contact_details:{
+        //       name:order?.companyName,
+        //       phone_number:`$+91${response.user?.phone}`
+        //     }
+        //   },
+          
+        // })
+      });
+    fetch(`http://139.59.64.38:80/api/orders/track?id=${id}`, {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((response) => {
+         console.log(response.completeOrder)
+        setOrder(response.completeOrder);
+        setdelivery_instructions({
+          instructions_list:[
+            {type:"text" || "this is instruction",
+              description:response.completeOrder.deliveryInstruction || "this is instruction"
+            }
+          ]
+        })
+        
+        setdrop_details({
+          address:{
+          apartment_address: response.completeOrder.shippingDetails?.houseNo,
+      street_address1: response.completeOrder?.shippingDetails?.street || "cxsdcsdc",
+      street_address2: "" || "",
+      landmark: response.completeOrder?.shippingDetails?.landmark || "cxsdcdsc",
+      city: response.completeOrder?.shippingDetails?.city || "cxdscsdc ",
+      state: response.completeOrder?.shippingDetails?.state || "cxsdsd",
+      pincode: response.completeOrder?.shippingDetails?.pincode || "cxsdcdsc",
+      country: "India",
+      lat: response.completeOrder.theUser?.lat ,
+      lng: response.completeOrder.theUser?.long ,
+      contact_details:{
+        name:response.completeOrder?.companyName || "shopinKarts",
+        phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`
+      }
+          },
+     
+      });
 
+      });
+      console.log(request_id,
+        delivery_instructions,
+        pickup_details,
+        drop_details)
+  }, [id,userId]);
   useEffect(()=>{
     fetch(`http://139.59.64.38:80/api/porter/get/${id}`,{
         headers: { "Content-Type": "application/json" },
@@ -90,64 +154,7 @@ function OrderDetails() {
   
   },[query])
 
-  useEffect(() => {
-    fetch(`http://139.59.64.38:80/api/users/${userId}`, {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((response) => {
-        // console.log(response)
-        setUser(response.user);
-        setdrop_details({
-          address:{
-            lat:response.user?.lat,
-            long:response.user?.long
-          },
-          contact_details:{
-            name:order?.companyName,
-            phone_number:`$+91${response.user?.phone}`
-          }
-        })
-      });
-    fetch(`http://139.59.64.38:80/api/orders/track?id=${id}`, {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((response) => {
-         console.log(response.completeOrder)
-        setOrder(response.completeOrder);
-        setdelivery_instructions({
-          instructions_list:[
-            {type:response.completeOrder.deliveryInstruction,
-              description:response.completeOrder.deliveryInstruction
-            }
-          ]
-        })
-        setdrop_details({
-          address:{
-          apartment_address: response.completeOrder.shippingDetails?.houseNo,
-      street_address1: response.completeOrder?.shippingDetails?.street || "cxsdcsdc",
-      street_address2: "" || "",
-      landmark: response.completeOrder?.shippingDetails?.landmark || "cxsdcdsc",
-      city: response.completeOrder?.shippingDetails?.city || "cxdscsdc ",
-      state: response.completeOrder?.shippingDetails?.state || "cxsdsd",
-      pincode: response.completeOrder?.shippingDetails?.pincode || "cxsdcdsc",
-      country: "India",
-      lat: user?.lat || 12.9165757,
-      lng: user?.long || 77.6101163,
-          },
-      contact_details:{
-        name:response.completeOrder?.companyName,
-        phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`
-      }
-      });
-
-      });
-  }, []);
+ 
 
   const handleRequestPorter = async () => {
     if(!user.lat || !user.long){
@@ -211,14 +218,14 @@ function OrderDetails() {
       pickup_details,
       drop_details,
     };
-    console.log(formData);
+    console.log(JSON.stringify(formData));
     try {
       const response = await fetch(
         "http://139.59.64.38:80/proxy/v1/orders/create",
         {
           method: "POST",
 
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(formData),
         }
       );
 
@@ -228,7 +235,7 @@ function OrderDetails() {
       }
       toast.success("Order Requested Successfully")
       const data = await response.json();
-      console.log(data.order_id);
+      console.log(data);
       fetch(
         `http://139.59.64.38:80/api/porter/request/${id}?porterId=${data.order_id}`,
         {
@@ -239,7 +246,7 @@ function OrderDetails() {
           return res.json();
         })
         .then((response) => {
-         window.location.reload()
+        //  window.location.reload()
         });
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
