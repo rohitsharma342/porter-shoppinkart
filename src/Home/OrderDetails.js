@@ -247,6 +247,7 @@ function OrderDetails() {
         })
         .then((response) => {
         //  window.location.reload()
+        toast.success(response.message)
         });
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
