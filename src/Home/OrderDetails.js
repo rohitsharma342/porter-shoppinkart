@@ -38,11 +38,11 @@ function OrderDetails() {
 
   const [pickup_details, setpickup_details] = useState({
     address: {
-      apartment_address: "Divya Plaza",
-      street_address1: "Nagar Nigam Rd, Gurjaron Ka Mohalla, Dada Gurudev Nagar",
+      apartment_address: "HDFC Bank",
+      street_address1: "Nagar Nigam Rd, Gurjaron Ka Mohalla",
       street_address2: "",
-      landmark: "HDFC Bank",
-      city: "jaipur",
+      landmark: "Dada Gurudev Nagar",
+      city: "Jaipur",
       state: "Rajasthan",
       pincode: "302029",
       country: "India",
@@ -57,19 +57,19 @@ function OrderDetails() {
 
   const [drop_details, setdrop_details] = useState({
     address: {
-      apartment_address: order?.houseNo || "demo",
-      street_address1: order?.street || "cxsdcsdc",
-      street_address2: "twoddcscsc" || "c",
-      landmark: order?.landmark || "cxsdcdsc",
-      city: order?.city || "cxdscsdc ",
-      state: order?.state || "Rajashthan",
-      pincode: order?.pincode || "cxsdcdsc",
+      apartment_address: order?.houseNo || "-",
+      street_address1: order?.street || "-",
+      street_address2: "" || "",
+      landmark: order?.landmark || "-",
+      city: order?.city || "- ",
+      state: order?.state || "-",
+      pincode: order?.pincode || "-",
       country: "India",
       lat: user?.lat || 12.9165757,
       lng: user?.long || 77.6101163,
       contact_details: {
-        name: order?.companyName || "cxdcsdcdsc",
-        phone_number: user?.phone || "+917877575481",
+        name: order?.companyName || "-",
+        phone_number: user?.phone || "-",
       },
     },
   });
@@ -115,19 +115,19 @@ function OrderDetails() {
         
         setdrop_details({
           address:{
-          apartment_address: response.completeOrder.shippingDetails?.houseNo,
-      street_address1: response.completeOrder?.shippingDetails?.street || "cxsdcsdc",
+          apartment_address: response.completeOrder.shippingDetails?.houseNo || "-",
+      street_address1: response.completeOrder?.shippingDetails?.street || "street",
       street_address2: "" || "",
-      landmark: response.completeOrder?.shippingDetails?.landmark || "cxsdcdsc",
-      city: response.completeOrder?.shippingDetails?.city || "cxdscsdc ",
-      state: response.completeOrder?.shippingDetails?.state || "cxsdsd",
-      pincode: response.completeOrder?.shippingDetails?.pincode || "cxsdcdsc",
+      landmark: response.completeOrder?.shippingDetails?.landmark || "landmark",
+      city: response.completeOrder?.shippingDetails?.city || "-",
+      state: response.completeOrder?.shippingDetails?.state || "-",
+      pincode: response.completeOrder?.shippingDetails?.pincode || "-",
       country: "India",
       lat: response.completeOrder.theUser?.lat ,
       lng: response.completeOrder.theUser?.long ,
       contact_details:{
         name:response.completeOrder?.companyName || "shopinKarts",
-        phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`
+        phone_number:`+91${response.completeOrder?.shippingDetails?.phone}`|| "-"
       }
           },
      
