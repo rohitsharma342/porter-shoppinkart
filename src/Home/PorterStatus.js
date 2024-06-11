@@ -22,7 +22,7 @@ function PorterStatus() {
                 setPorter(response.data);
             } else {
                 setPorter(null);
-                toast.error("Failed to fetch porter details.");
+                // toast.error("Failed to fetch porter details.");
             }
         })
         .catch(error => {
