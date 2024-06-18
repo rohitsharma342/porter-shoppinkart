@@ -23,7 +23,7 @@ function PorterStatus() {
                 setPorter(response.data);
             } else {
                 setPorter(null);
-                toast.error("Failed to fetch porter details.");
+                // toast.error("Failed to fetch porter details.");
             }
         })
         .catch(error => {
@@ -35,8 +35,8 @@ function PorterStatus() {
     const handleFetch = async (porterId) => {
         try {
             const response = await fetch(`http://139.59.64.38:80/proxy/v1/orders/${porterId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
+                // method: "GET",
+                // headers: { "Content-Type": "application/json" },
             });
 
             if (!response.ok) {
